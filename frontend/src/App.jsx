@@ -3,11 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import WeatherDashboard from './components/WeatherDashboard';
-// Imports removed
-
-// Placeholder for Login/Register if they don't exist yet
-const LoginPlaceholder = () => <div><h2>Login Page</h2></div>;
-const RegisterPlaceholder = () => <div><h2>Register Page</h2></div>;
+import Login from './components/Login';
+import Register from './components/Register';
 
 function App() {
     return (
@@ -15,8 +12,8 @@ function App() {
             <AuthProvider>
                 <div className="App">
                     <Routes>
-                        <Route path="/login" element={<LoginPlaceholder />} />
-                        <Route path="/register" element={<RegisterPlaceholder />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
                         <Route
                             path="/"
                             element={
