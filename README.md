@@ -76,8 +76,8 @@ The easiest way to get up and running. Requires **Docker** and **Docker Compose*
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/agri-weather-app.git
-    cd agri-weather-app
+    git clone https://github.com/Nithish6606/WeatherApp.git
+    cd WeatherApp
     ```
 
 2.  **Configure Environment:**
