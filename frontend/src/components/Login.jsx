@@ -9,10 +9,14 @@ const Login = () => {
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const [loading, setLoading] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
         const result = await login(username, password);
+        setLoading(false);
         if (result.success) {
             navigate('/');
         } else {
@@ -46,7 +50,9 @@ const Login = () => {
                             required
                         />
                     </div>
-                    <button type="submit" style={styles.button}>Login</button>
+                    <button type="submit" style={styles.button} disabled={loading}>
+                        {loading ? 'Logging in...' : 'Login'}
+                    </button>
                 </form>
                 <p style={styles.footer}>
                     Don't have an account? <Link to="/register" style={styles.link}>Register</Link>
