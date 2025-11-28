@@ -95,6 +95,7 @@ The easiest way to get up and running. Requires **Docker** and **Docker Compose*
 4.  **Initialize Database:**
     Open a new terminal and run:
     ```bash
+    docker-compose exec backend python manage.py makemigrations users
     docker-compose exec backend python manage.py migrate
     docker-compose exec backend python manage.py createsuperuser
     ```
