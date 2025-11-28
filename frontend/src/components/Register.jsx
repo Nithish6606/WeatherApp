@@ -39,7 +39,22 @@ const Register = () => {
             navigate('/login');
         } catch (err) {
             console.error('Registration failed:', err);
-            setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+            let errorMessage = 'Registration failed. Please try again.';
+
+            if (err.response?.data) {
+                const data = err.response.data;
+                if (data.detail) {
+                    errorMessage = data.detail;
+                } else if (typeof data === 'object') {
+                    // Handle DRF validation errors (e.g., { username: ['Error'] })
+                    const messages = Object.entries(data).map(([key, value]) => {
+                        const fieldError = Array.isArray(value) ? value.join(' ') : value;
+                        return `${key}: ${fieldError}`;
+                    });
+                    errorMessage = messages.join('\n');
+                }
+            }
+            setError(errorMessage);
         }
     };
 
