@@ -24,7 +24,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libpq-dev binutils libproj-dev gdal-bin && \
+    apt-get install -y --no-install-recommends libpq-dev binutils libproj-dev gdal-bin netcat-openbsd && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /opt/venv /opt/venv
@@ -35,4 +35,10 @@ USER app
 
 COPY backend/ .
 
+COPY backend/entrypoint.sh .
+USER root
+RUN chmod +x entrypoint.sh
+USER app
+
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
