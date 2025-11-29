@@ -17,7 +17,7 @@ SECRET_KEY = 'django-insecure-change-me-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Application definition
 
@@ -143,12 +143,7 @@ SIMPLE_JWT = {
 }
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost",
-    "http://localhost:80",
-    "http://127.0.0.1",
-    "http://127.0.0.1:80",
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # OpenWeatherMap API Key
 OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
