@@ -45,11 +45,22 @@ const WeatherDashboard = () => {
 
     const checkHealth = async () => {
         try {
-            const response = await fetch('/api/health');
-            const text = await response.text();
-            alert(`Health Check: Status ${response.status}, Body: ${text}`);
+            // Test 1: Health Endpoint
+            const healthRes = await fetch('/api/health');
+            const healthText = await healthRes.text();
+
+            // Test 2: Weather Endpoint (using fetch, bypassing axios)
+            let weatherMsg = "Skipped";
+            if (location) {
+                const weatherRes = await fetch(`/api/weather/current/?lat=${location.lat}&lon=${location.lon}`);
+                weatherMsg = `Status ${weatherRes.status}`;
+            } else {
+                weatherMsg = "No location";
+            }
+
+            alert(`Health: ${healthRes.status} (${healthText})\nWeather (fetch): ${weatherMsg}`);
         } catch (err) {
-            alert(`Health Check Failed: ${err.message}`);
+            alert(`Check Failed: ${err.message}`);
         }
     };
 
