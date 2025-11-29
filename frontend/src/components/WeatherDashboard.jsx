@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import { FaThermometerHalf, FaWind } from 'react-icons/fa';
+import { WiHumidity } from 'react-icons/wi';
+import styles from './WeatherDashboard.module.css';
 
 const WeatherDashboard = () => {
     const [weatherData, setWeatherData] = useState(null);
@@ -72,70 +74,65 @@ const WeatherDashboard = () => {
     };
 
     if (loading) {
-        return <div style={styles.container}>Locating your farm...</div>;
+        return (
+            <div className={styles.container}>
+                <div className={styles.loadingContainer}>
+                    <div className={styles.loadingText}>Locating your farm...</div>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
         return (
-            <div style={styles.container}>
-                <p style={styles.error}>{error}</p>
-                <button onClick={handleRetry} style={styles.button}>Retry</button>
+            <div className={styles.container}>
+                <div className={styles.errorContainer}>
+                    <div className={styles.errorBox}>{error}</div>
+                    <button onClick={handleRetry} className={styles.retryButton}>Retry</button>
+                </div>
             </div>
         );
     }
 
     return (
-        <div style={styles.dashboard}>
-            <h2>Current Weather</h2>
-            {weatherData && (
-                <div style={styles.card}>
-                    <p><strong>Source:</strong> {weatherData?.source}</p>
-                    <p><strong>Temperature:</strong> {weatherData?.temp}°C</p>
-                    <p><strong>Humidity:</strong> {weatherData?.humidity}%</p>
-                    <p><strong>Wind Speed:</strong> {weatherData?.wind_speed} m/s</p>
-                    <p><strong>Condition:</strong> {weatherData?.description}</p>
-                </div>
-            )}
+        <div className={styles.container}>
+            <div className={styles.dashboard}>
+                <h2 className={styles.title}>Current Weather</h2>
+                {weatherData && (
+                    <div className={styles.card}>
+                        <div className={styles.header}>
+                            <span className={styles.source}>Source: {weatherData?.source}</span>
+                        </div>
+
+                        <div className={styles.mainInfo}>
+                            <div className={styles.temperature}>
+                                <FaThermometerHalf className={styles.tempIcon} />
+                                {weatherData?.temp}°C
+                            </div>
+                            <div className={styles.condition}>{weatherData?.description}</div>
+                        </div>
+
+                        <div className={styles.detailsGrid}>
+                            <div className={styles.detailItem}>
+                                <div className={styles.icon}><WiHumidity /></div>
+                                <div>
+                                    <span className={styles.label}>Humidity</span>
+                                    <div className={styles.value}>{weatherData?.humidity}%</div>
+                                </div>
+                            </div>
+                            <div className={styles.detailItem}>
+                                <div className={styles.icon}><FaWind /></div>
+                                <div>
+                                    <span className={styles.label}>Wind</span>
+                                    <div className={styles.value}>{weatherData?.wind_speed} m/s</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
-};
-
-const styles = {
-    container: {
-        padding: '20px',
-        textAlign: 'center',
-        fontFamily: 'Arial, sans-serif',
-    },
-    dashboard: {
-        padding: '20px',
-        maxWidth: '600px',
-        margin: '0 auto',
-        fontFamily: 'Arial, sans-serif',
-    },
-    card: {
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        padding: '20px',
-        marginTop: '20px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        backgroundColor: '#f9f9f9',
-    },
-    error: {
-        color: '#d32f2f',
-        marginBottom: '10px',
-        fontWeight: 'bold',
-        wordBreak: 'break-all', // Ensure long URLs don't overflow
-    },
-    button: {
-        padding: '10px 20px',
-        backgroundColor: '#1976d2',
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        margin: '0 5px',
-    }
 };
 
 export default WeatherDashboard;
