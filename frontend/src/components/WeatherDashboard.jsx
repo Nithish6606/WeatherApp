@@ -17,8 +17,23 @@ const WeatherDashboard = () => {
             const response = await api.get(`weather/current/?lat=${lat}&lon=${lon}`);
             setWeatherData(response.data);
         } catch (err) {
-            console.error(err);
-            setError('Failed to fetch weather data. Please try again.');
+            console.error("Weather fetch error:", err);
+            let errorMessage = 'Failed to fetch weather data.';
+            if (err.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                errorMessage += ` Server Error: ${err.response.status} ${err.response.statusText}`;
+                if (err.response.data && err.response.data.error) {
+                    errorMessage += ` - ${err.response.data.error}`;
+                }
+            } else if (err.request) {
+                // The request was made but no response was received
+                errorMessage += ' No response from server. Check network connection.';
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                errorMessage += ` Request Error: ${err.message}`;
+            }
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
