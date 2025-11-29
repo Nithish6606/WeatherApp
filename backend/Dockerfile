@@ -33,9 +33,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN addgroup --system app && adduser --system --group app
 USER app
 
-COPY backend/ .
+COPY --chown=app:app backend/ .
 
-COPY backend/entrypoint.sh .
+COPY --chown=app:app backend/entrypoint.sh .
 USER root
 RUN chmod +x entrypoint.sh
 USER app
