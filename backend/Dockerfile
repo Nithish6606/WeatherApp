@@ -41,4 +41,4 @@ RUN chmod +x entrypoint.sh
 USER app
 
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]

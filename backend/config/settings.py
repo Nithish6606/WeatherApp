@@ -17,7 +17,12 @@ SECRET_KEY = 'django-insecure-change-me-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = ['*']
+
+# Trust Nginx proxy headers
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 # Application definition
 
