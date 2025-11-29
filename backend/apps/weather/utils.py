@@ -26,7 +26,8 @@ def _fetch_openweather(lat, lon):
             "temp": float(data["main"]["temp"]),
             "humidity": int(data["main"]["humidity"]),
             "description": str(data["weather"][0]["description"]),
-            "wind_speed": float(data["wind"]["speed"]),
+            "wind_speed": round(float(data["wind"]["speed"]) * 3.6, 1), # Convert m/s to km/h
+            "location_name": data.get("name", "Farm Location"),
             "source": "OpenWeatherMap"
         }
     except (requests.exceptions.RequestException, KeyError, ValueError) as e:
@@ -50,7 +51,8 @@ def _fetch_openmeteo(lat, lon):
             "temp": float(current["temperature"]),
             "humidity": 0, # Open-Meteo current_weather doesn't provide humidity directly in this endpoint
             "description": "Clear sky" if current["weathercode"] == 0 else "Cloudy/Rainy", # Simplified mapping
-            "wind_speed": float(current["windspeed"]),
+            "wind_speed": float(current["windspeed"]), # Open-Meteo defaults to km/h
+            "location_name": "Custom GPS Location",
             "source": "Open-Meteo"
         }
     except (requests.exceptions.RequestException, KeyError, ValueError) as e:

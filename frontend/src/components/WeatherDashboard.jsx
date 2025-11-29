@@ -7,7 +7,7 @@ const WeatherDashboard = () => {
     const [weatherData, setWeatherData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [location, setLocation] = useState(null);
+    const [lastUpdated, setLastUpdated] = useState(null);
 
     const fetchWeather = async (lat, lon) => {
         try {
@@ -22,6 +22,7 @@ const WeatherDashboard = () => {
 
             const data = await response.json();
             setWeatherData(data);
+            setLastUpdated(new Date());
         } catch (err) {
             console.error("Weather fetch error:", err);
             setError(`Failed to fetch weather data. ${err.message}`);
@@ -40,7 +41,6 @@ const WeatherDashboard = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                setLocation({ lat: latitude, lon: longitude });
                 fetchWeather(latitude, longitude);
             },
             (err) => {
@@ -62,7 +62,6 @@ const WeatherDashboard = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                setLocation({ lat: latitude, lon: longitude });
                 fetchWeather(latitude, longitude);
             },
             (err) => {
@@ -71,6 +70,15 @@ const WeatherDashboard = () => {
                 setLoading(false);
             }
         );
+    };
+
+    const formatTime = (date) => {
+        if (!date) return '';
+        return new Intl.DateTimeFormat('default', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        }).format(date);
     };
 
     if (loading) {
@@ -97,11 +105,12 @@ const WeatherDashboard = () => {
     return (
         <div className={styles.container}>
             <div className={styles.dashboard}>
-                <h2 className={styles.title}>Current Weather</h2>
+                <h2 className={styles.title}>Farm Weather</h2>
                 {weatherData && (
                     <div className={styles.card}>
                         <div className={styles.header}>
-                            <span className={styles.source}>Source: {weatherData?.source}</span>
+                            <h2 className={styles.locationName}>{weatherData.location_name || "Your Field"}</h2>
+                            <div className={styles.timestamp}>Last Updated: {formatTime(lastUpdated)}</div>
                         </div>
 
                         <div className={styles.mainInfo}>
@@ -115,19 +124,16 @@ const WeatherDashboard = () => {
                         <div className={styles.detailsGrid}>
                             <div className={styles.detailItem}>
                                 <div className={styles.icon}><WiHumidity /></div>
-                                <div>
-                                    <span className={styles.label}>Humidity</span>
-                                    <div className={styles.value}>{weatherData?.humidity}%</div>
-                                </div>
+                                <span className={styles.label}>Humidity</span>
+                                <div className={styles.value}>{weatherData?.humidity}%</div>
                             </div>
                             <div className={styles.detailItem}>
                                 <div className={styles.icon}><FaWind /></div>
-                                <div>
-                                    <span className={styles.label}>Wind</span>
-                                    <div className={styles.value}>{weatherData?.wind_speed} m/s</div>
-                                </div>
+                                <span className={styles.label}>Wind</span>
+                                <div className={styles.value}>{weatherData?.wind_speed} km/h</div>
                             </div>
                         </div>
+                        <div className={styles.source}>Source: {weatherData?.source}</div>
                     </div>
                 )}
             </div>
