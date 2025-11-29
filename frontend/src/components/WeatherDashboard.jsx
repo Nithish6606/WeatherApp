@@ -11,56 +11,20 @@ const WeatherDashboard = () => {
         try {
             setLoading(true);
             setError(null);
-            // Endpoint: GET /weather/current/?lat={lat}&lon={lon}
-            // Note: The task said GET /weather/?lat... but previous steps defined /api/weather/current/
-            // I will use the correct endpoint defined in urls.py: weather/current/
-            const response = await api.get(`weather/current/?lat=${lat}&lon=${lon}`);
-            setWeatherData(response.data);
+            // Use native fetch to avoid Axios/CORS preflight issues for this public endpoint
+            const response = await fetch(`/api/weather/current/?lat=${lat}&lon=${lon}`);
+
+            if (!response.ok) {
+                throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            setWeatherData(data);
         } catch (err) {
             console.error("Weather fetch error:", err);
-            let errorMessage = 'Failed to fetch weather data.';
-            if (err.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                errorMessage += ` Server Error: ${err.response.status} ${err.response.statusText}`;
-                if (err.response.data && err.response.data.error) {
-                    errorMessage += ` - ${err.response.data.error}`;
-                }
-            } else if (err.request) {
-                // The request was made but no response was received
-                errorMessage += ' No response from server. Check network connection.';
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                errorMessage += ` Request Error: ${err.message}`;
-            }
-            // Add config details for debugging
-            if (err.config) {
-                errorMessage += ` | URL: ${err.config.baseURL || ''}${err.config.url}`;
-            }
-            setError(errorMessage);
+            setError(`Failed to fetch weather data. ${err.message}`);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const checkHealth = async () => {
-        try {
-            // Test 1: Health Endpoint
-            const healthRes = await fetch('/api/health');
-            const healthText = await healthRes.text();
-
-            // Test 2: Weather Endpoint (using fetch, bypassing axios)
-            let weatherMsg = "Skipped";
-            if (location) {
-                const weatherRes = await fetch(`/api/weather/current/?lat=${location.lat}&lon=${location.lon}`);
-                weatherMsg = `Status ${weatherRes.status}`;
-            } else {
-                weatherMsg = "No location";
-            }
-
-            alert(`Health: ${healthRes.status} (${healthText})\nWeather (fetch): ${weatherMsg}`);
-        } catch (err) {
-            alert(`Check Failed: ${err.message}`);
         }
     };
 
@@ -116,9 +80,6 @@ const WeatherDashboard = () => {
             <div style={styles.container}>
                 <p style={styles.error}>{error}</p>
                 <button onClick={handleRetry} style={styles.button}>Retry</button>
-                <div style={{ marginTop: '10px' }}>
-                    <button onClick={checkHealth} style={{ ...styles.button, backgroundColor: '#4caf50' }}>Test /api/health</button>
-                </div>
             </div>
         );
     }
