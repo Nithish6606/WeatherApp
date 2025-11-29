@@ -60,24 +60,32 @@ def _fetch_openmeteo(lat, lon):
 def get_weather_data(lat, lon):
     """
     Orchestrator to fetch weather data.
-    Tries OpenWeatherMap first, then falls back to Open-Meteo.
+    Tries OpenWeatherMap first (if key exists), then falls back to Open-Meteo.
     Raises ServiceUnavailable if both fail.
     Cached for 10 minutes.
     """
     cache_key = f"weather_{lat}_{lon}"
     
     def fetch_data():
-        try:
-            data = _fetch_openweather(lat, lon)
-            logger.info("Served via OpenWeatherMap")
-            return data
-        except Exception:
+        # Try OpenWeatherMap if key is present
+        if settings.OPENWEATHER_API_KEY:
             try:
-                data = _fetch_openmeteo(lat, lon)
-                logger.info("Served via Open-Meteo")
+                data = _fetch_openweather(lat, lon)
+                logger.info("Served via OpenWeatherMap")
                 return data
-            except Exception:
-                logger.error("Both weather services failed.")
-                raise ServiceUnavailable("Weather services are currently unavailable.")
+            except Exception as e:
+                logger.warning(f"OpenWeatherMap failed: {e}")
+                # Fall through to Open-Meteo
+        else:
+            logger.info("No OpenWeatherMap API key found, skipping.")
+
+        # Try Open-Meteo
+        try:
+            data = _fetch_openmeteo(lat, lon)
+            logger.info("Served via Open-Meteo")
+            return data
+        except Exception as e:
+            logger.error(f"Open-Meteo failed: {e}")
+            raise ServiceUnavailable(f"Weather services unavailable. Last error: {str(e)}")
 
     return cache.get_or_set(cache_key, fetch_data, timeout=600)
