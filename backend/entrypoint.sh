@@ -9,6 +9,8 @@ echo "Database started"
 
 # Run migrations
 echo "Running migrations..."
+python manage.py makemigrations users
+python manage.py makemigrations weather
 python manage.py makemigrations
 python manage.py migrate
 
