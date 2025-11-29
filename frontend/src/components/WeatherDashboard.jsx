@@ -33,9 +33,23 @@ const WeatherDashboard = () => {
                 // Something happened in setting up the request that triggered an Error
                 errorMessage += ` Request Error: ${err.message}`;
             }
+            // Add config details for debugging
+            if (err.config) {
+                errorMessage += ` | URL: ${err.config.baseURL || ''}${err.config.url}`;
+            }
             setError(errorMessage);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const checkHealth = async () => {
+        try {
+            const response = await fetch('/api/health');
+            const text = await response.text();
+            alert(`Health Check: Status ${response.status}, Body: ${text}`);
+        } catch (err) {
+            alert(`Health Check Failed: ${err.message}`);
         }
     };
 
@@ -91,6 +105,9 @@ const WeatherDashboard = () => {
             <div style={styles.container}>
                 <p style={styles.error}>{error}</p>
                 <button onClick={handleRetry} style={styles.button}>Retry</button>
+                <div style={{ marginTop: '10px' }}>
+                    <button onClick={checkHealth} style={{ ...styles.button, backgroundColor: '#4caf50' }}>Test /api/health</button>
+                </div>
             </div>
         );
     }
@@ -135,6 +152,7 @@ const styles = {
         color: '#d32f2f',
         marginBottom: '10px',
         fontWeight: 'bold',
+        wordBreak: 'break-all', // Ensure long URLs don't overflow
     },
     button: {
         padding: '10px 20px',
@@ -144,6 +162,7 @@ const styles = {
         borderRadius: '4px',
         cursor: 'pointer',
         fontSize: '16px',
+        margin: '0 5px',
     }
 };
 
